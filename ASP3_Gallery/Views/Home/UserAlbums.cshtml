@@ -1,0 +1,53 @@
+﻿
+@model IEnumerable<ASP3_Gallery.Models.ViewModels.ViewAlbum>
+<h2>User @ViewBag.Username Page</h2>
+
+
+
+
+<h5 class="mt-0 bg-secondary text-white text-center">User with login: <span class="text-warning"> @ViewBag.Login</span> have <span class="text-warning font-weight-bold"> @Model.Count()</span> albums</h5>
+<div class="py-5">
+
+    <div class="row hidden-md-up">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="embed-responsive embed-responsive-4by3">
+
+                        <a data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Gallery/@item.IDA">
+                            <img class="card-img-top embed-responsive-item" src="@item.URLpath"
+                                 alt="Card image cap">
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                       
+                        <h4 class="card-title font-weight-bold">@item.Name</h4>
+                        <p class="card-text">
+                            @item.Comment
+                        </p>
+
+
+
+
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-warning btn-md btn-rounded" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/UserAlbums/@item.IDU">
+                            @item.User <span class="badge badge-dark"></span>
+                        </a>
+
+                        <p class="float-right badge badge-pill badge-primary ml-2">@item.Count</p>
+
+
+                        <span class="float-right badge badge-secondary">@item.Date</span>
+
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+
+</div>

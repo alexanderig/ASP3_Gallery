@@ -1,0 +1,156 @@
+﻿@model ASP3_Gallery.Models.ViewModels.ViewRegister
+
+@{
+    ViewBag.Title = "Register";
+}
+
+
+@using (Ajax.BeginForm("Register", "Account", new AjaxOptions
+{
+    UpdateTargetId = "mybody",
+    InsertionMode = InsertionMode.Replace
+}))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Welcome to New User Registration</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group mx-auto col-sm-4">
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2  font-weight-bold" })
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", @placeholder = "Example: Michael Jackson", @style = "max-width:100%" } })
+            </div>
+            @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mx-auto col-sm-4">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2  font-weight-bold" })
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-at"></i></span>
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your Email", @style = "max-width:100%" } })
+            </div>
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mx-auto col-sm-4">
+            @Html.LabelFor(model => model.Country, htmlAttributes: new { @class = "control-label col-md-2 font-weight-bold" })
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                @Html.DropDownListFor(model => model.CountryID, ViewBag.ListCountries as SelectList, new { @class = "form-control", @style = "max-width:100%", @id = "mycountrydrop" })
+            </div>
+            @Html.ValidationMessageFor(model => model.CountryID, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mx-auto col-sm-4">
+            @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-2 font-weight-bold" })
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-building"></i></span>
+                @Html.DropDownListFor(model => model.CityID, ViewBag.ListCities as SelectList, new { @class = "form-control", @style = "max-width:100%", @id = "mycitydrop" })
+            </div>
+            @Html.ValidationMessageFor(model => model.CityID, "", new { @class = "text-danger" })
+            <div id="loading" style="display:none;">
+                <p class="text-danger">Loading Cities...</p>
+            </div>
+        </div>
+
+        <div class="form-group mx-auto col-sm-4">
+            @Html.LabelFor(model => model.Login, htmlAttributes: new { @class = "control-label col-md-2 font-weight-bold" })
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                @Html.EditorFor(model => model.Login, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your Login", @style = "max-width:100%" } })
+            </div>
+            @Html.ValidationMessageFor(model => model.Login, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mx-auto col-sm-4">
+            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2 font-weight-bold" })
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", @placeholder = "Enter your Password > 4 chars", @style = "max-width:100%" } })
+            </div>
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mx-auto col-sm-4">
+            @Html.LabelFor(model => model.PasswordDouble, htmlAttributes: new { @class = "control-label col-md-2 font-weight-bold" })
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user-lock"></i></span>
+                @Html.EditorFor(model => model.PasswordDouble, new { htmlAttributes = new { @class = "form-control", @placeholder = "Repeat Password", @style = "max-width:100%" } })
+            </div>
+            @Html.ValidationMessageFor(model => model.PasswordDouble, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mx-auto col-sm-4">
+            @Html.LabelFor(model => model.About, htmlAttributes: new { @class = "control-label col-md-2 font-weight-bold" })
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-comment-dots"></i></span>
+                @Html.TextAreaFor(model => model.About, new { @class = "form-control mx-auto", @placeholder = "Write about yourself (Optional)", @style = "max-width:100%;min-height:80px" })
+            </div>
+            @Html.ValidationMessageFor(model => model.About, "", new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 mx-auto col-sm-2">
+                <input type="submit" value=" Register Me " class="btn btn-warning btn-outline-dark col-sm-9" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/Home/Index" class="btn btn-success btn-block">Back to Home page &raquo; <i class="fas fa-home"></i> </a>
+    </br>
+</div>
+</br>
+</br>
+@*
+    @section Scripts {
+
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryUI")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/jqueryunobtrusive") @*функциональность Ajax-хелперов*@
+@*Scripts.Render("~/bundles/bootstrap")
+
+}
+*@
+
+<script type="text/javascript">
+
+
+
+
+    $(document).ready(function () {
+        $.validator.unobtrusive.parse(document);
+        $('#mycountrydrop').change(function () {
+            var citydrop = $('#mycitydrop');
+            citydrop.empty();
+            var cntr = $(this).val();
+            if (cntr) {
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetCities", "Account")',
+                    data: { CountryID: cntr },
+                    dataType: "json",
+                    success: function (data) {
+                        for (var i = 0; i < data.length; i++) {
+                            citydrop.append('<option value="' + data[i].ID + '">' + data[i].CityName + '</option>');
+                        }
+                    },
+                    error: function (result) {
+                        $('#mycitydrop').html('<option value="">Error Country or no Cities</option>');
+                    }
+
+                });
+            }
+            else {
+                $('#mycitydrop').html('<option value="">Select Country or no Cities</option>');
+
+            }
+
+        });
+    });
+</script>

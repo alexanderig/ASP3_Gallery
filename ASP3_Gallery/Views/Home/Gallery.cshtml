@@ -1,0 +1,185 @@
+﻿@model IEnumerable<ASP3_Gallery.Models.Entities.Picture>
+
+<div class="jumbotron bg-dark text-white  mb-4 mt-3 p-4">
+    <p>Album by <span class="text-warning">@ViewBag.Album.User</span></p>
+
+    <div class="container text-center mb-0">
+        <h1 class="font-weight-light text-white">@ViewBag.Album.Name</h1>
+    </div>
+
+    <p class="float-left">Date creation: <span class="badge badge-pill badge-primary ml-2">@ViewBag.Album.Date</span></p>
+    <p class="float-right">Pictures: <span class="badge badge-pill badge-primary ml-2">@ViewBag.Album.Count</span></p>
+    <br />
+    <p class="float-left">Comment:  <span class="text-warning">@ViewBag.Album.Comment</span></p>
+    <input type="hidden" name="IDA" value="@ViewBag.Album.IDA" id="IDA">
+</div>
+@if (Session["Name"] != null && Session["Name"].ToString() == ViewBag.Album.User)
+{
+    <div style=" background-color:rgba(252, 244, 219, 0.71)" class="jumbotron p-2">
+        <button type="button" class="btn btn-warning mb-2" data-toggle="collapse" data-target="#picfileload">Download files</button>
+        <div class="collapse" id="picfileload">
+            <div class="row text-sm-center">
+                <input type="file" name="upload" id="uploadPics" value="Choose pictures" multiple class="form-control btn btn-warning col-md-4 ml-3" accept=".jpg,.jpeg,.png" /><br />
+                <button id="submitpic" class="btn btn-warning col-md-3 ml-4">Download pictures</button>
+            </div>
+            <div class="alert-danger" id="diverrors" style="display:none"></div>
+            <div class="alert-success" id="noerrors" style="display:none">Succesfully completed</div>
+        </div>
+    </div>
+}
+
+<div class="container py-3">
+    <div class="row">
+
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-5">
+                <div class="card border-0 shadow">
+                    <a href="@item.URLpath" class="elem d-block mb-1 h-100" title="@item.Name"
+                       data-lcl-txt="@item.Date, @item.Size, @item.Color"
+                       data-lcl-author="@ViewBag.Album.User"
+                       data-lcl-thumb="@item.URLpath">
+                        <img src="@item.URLpath" class="card-img-top img-thumbnail" alt="...">
+                    </a>
+                    <div class="card-body text-center m-0 p-1">
+                        <h6 class="card-title mb-0">@item.Name</h6>
+                        @if (Session["Name"] != null && Session["Name"].ToString() == ViewBag.Album.User)
+                        {
+                            if (ViewBag.Album.URLpath == item.URLpath)
+                            {
+                                <a data-toggle="tooltip" title="Set Album Thumbnail" value="@item.ID" class="Edit-thumb btn btn-success btn-circle float-right" href="/Home/EditThumbnail/@item.ID">
+                                    <i class="fas fa-check-square"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <a data-toggle="tooltip" title="Set Album Thumbnail" value="@item.ID" class="Edit-thumb btn btn-dark btn-circle float-right" href="/Home/EditThumbnail/@item.ID">
+                                    <i class="fas fa-check-square"></i>
+                                </a>
+                            }
+
+                            <a data-toggle="tooltip" title="Delete Picture" value="@item.ID" class="Delete-pic btn btn-danger btn-circle float-right" href="/Home/DeletePic/@item.ID">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        }
+
+                    </div>
+                </div>
+
+
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="modalpic" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+
+
+</div>
+@if (Session["Name"] != null && Session["Name"].ToString() == ViewBag.Album.User)
+{
+    <a class="btn btn-block btn-success" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Album">To My Albums page</a>
+}
+else
+{
+    <a class="btn btn-block btn-success" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Allbums"> Return to All Albums</a>
+}
+
+<br />
+<br />
+
+<script type="text/javascript">
+    $(document).ready(function (e) {
+        // live handler
+        lc_lightbox('.elem', {
+            wrap_class: 'lcl_fade_oc',
+            gallery: true,
+            thumb_attr: 'data-lcl-thumb',
+            slideshow_time: 3000,
+            fading_time: 250,
+            skin: 'dark',
+            radius: 0,
+            padding: 0,
+            border_w: 1,
+            fullscreen: true,
+
+        });
+
+    });
+
+
+    function UpdateGallery() {
+        setTimeout(function() {
+            $.ajax({
+            url: '@Url.Action("Gallery", "Home")',
+            success: function (data, status) {
+                $('#mybody').html(data);
+            }
+        })
+        }, 500);
+    }
+
+
+
+    $(".Delete-pic").on("click", function (e) {
+        e.preventDefault();
+        $.get(this.href, function (result) {
+
+            $('#modalpic').html(result);
+            $('#modalpic').modal('show');
+        })
+    });
+
+    $(".Edit-thumb").on("click", function (e) {
+        e.preventDefault();
+        $.get(this.href, function (result) {
+
+            $('#modalpic').html(result);
+            $('#modalpic').modal('show');
+        })
+    });
+
+
+    $('#submitpic').click(function (e) {
+        e.preventDefault();
+        $('#noerrors').hide();
+        var files = document.getElementById('uploadPics').files;
+        var errordiv = $('#diverrors');
+        errordiv.empty();
+        if (files.length == 0)
+            errordiv.append("Choose at least 1 file");
+        if (files.length == 0) { errordiv.show(); return false; }
+        var data = new FormData();
+        for (var i = 0; i < files.length; i++) {
+            data.append("file" + i, files[i]);
+            data.append("filedate" + i, files[i].lastModifiedDate);
+        }
+        data.append("IDA", $('#IDA').val());
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("UploadPics", "Home")',
+            contentType: false, // Указывает тип содержимого, которое будет передано на сервер.
+            processData: false, // Логическое значение, устанавливающее, должны ли данные, передающиеся с запросом преобразовываться в строку или нет
+            data: data,
+            success: function (data) {
+                $('#noerrors').show();
+                UpdateGallery();
+            },
+            complete: function () {
+                $('#uploadPics').val('');
+
+            }
+        });
+    });
+
+
+
+
+
+
+
+
+</script>
+
+
+

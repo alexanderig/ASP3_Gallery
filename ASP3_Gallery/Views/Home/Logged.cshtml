@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "Logged info page";
+}
+<h2>@ViewBag.Title</h2>
+<h3>You logged as: <span class="text-primary">@Session["Login"] - (@Session["Name"])</span></h3>
+
+
+<div style=" background-color:rgba(252, 244, 219, 0.71)" class="jumbotron p-3">
+    <h4>You are from country - <strong class="alert-info">@Session["Country"]</strong></h4>
+    <h4>Your city - <strong class="alert-info">@Session["City"]</strong></h4>
+    <h4>Email - <span class="alert-success">@Session["Email"]</span></h4>
+    <h4>About - <span class="alert-danger">@Session["About"]</span></h4>
+
+</div>
+
+
+<div style=" text-align: center; background-color: rgba(252, 244, 219, 0.71) " class="jumbotron p-3">
+
+
+
+
+    <h4>Go directly to your page:</h4>
+
+    
+    @Ajax.ActionLink(" My page ", "Album", "Home",  new AjaxOptions { UpdateTargetId = "mybody" },  new { @class = "btn btn-success" })
+</div>
+
+<div style=" text-align: center; background-color: rgba(252, 244, 219, 0.71) " class="jumbotron p-3">
+
+
+
+
+    <h4>You can logout by pressing button below:</h4>
+
+    <p><a href="/Home/Logout" class="btn btn-primary btn-lg">Logout &raquo;</a></p>
+</div>
+
+
+
+<address>
+    One Rozdilna Way<br />
+    Rozdilna, UA 3808052-6399<br />
+    <abbr title="Phone">P:</abbr>
+    +38-093-652-0202
+</address>
+
+<address>
+    <strong>Support:</strong>   <a href="mailto:Support@picturegallery.com">Support@picturegallery.com</a><br />
+    <strong>Marketing:</strong> <a href="mailto:Marketing@picturegallery.com">Marketing@picturegallery.com</a>
+</address>
+
+
+<script type="text/javascript">
+
+
+
+
+    $(document).ready(function () {
+
+        var navbardiv = $('#navbardiv');
+        var usermenu = $('#usermenu');
+        if (navbardiv) {
+            navbardiv.empty();
+            navbardiv.append("<li id='loggedid' class='nav-item'><a class='nav-link' data-ajax='true' data-ajax-mode='replace' data-ajax-update='#mybody' href='/Home/Logged'><i class='fas fa-user-tie text-warning'></i> Account</a></li>");
+
+        }
+        if (usermenu) {
+            usermenu.empty();
+            usermenu.append('<a class="dropdown-item text-muted" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Allbums"><i class="fas fa-images text-warning"></i> All Albums </a>');
+            usermenu.prepend('<a class="dropdown-item text-muted" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Album"><i class="fas fa-camera-retro text-warning"></i> My Albums </a>');
+        }
+
+    });
+</script>

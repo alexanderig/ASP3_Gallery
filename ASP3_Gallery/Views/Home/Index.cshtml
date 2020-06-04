@@ -1,0 +1,61 @@
+﻿
+@model IEnumerable<ASP3_Gallery.Models.ViewModels.ViewAlbum>
+<h2>Last added Albums</h2>
+
+
+
+
+<h5 class="mt-0 bg-secondary text-white text-center">Total Albums in Picture Gallery:<span class="text-warning font-weight-bold"> @ViewBag.Albums </span>, Total Pictures in Gallery: <span class="text-warning font-weight-bold"> @ViewBag.Pictures </span></h5>
+<div class="py-5">
+
+    <div class="row hidden-md-up">
+        @{int count = 0; } 
+        @foreach (var item in Model.Reverse())
+        {
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="embed-responsive embed-responsive-4by3">
+
+                        <a data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Gallery/@item.IDA">
+                            <img class="card-img-top embed-responsive-item" src="@item.URLpath"
+                                 alt="Card image cap">
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+
+                        <h4 class="card-title font-weight-bold">@item.Name</h4>
+                        <p class="card-text">
+                            @item.Comment
+                        </p>
+
+
+
+
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-warning btn-md btn-rounded" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/UserAlbums/@item.IDU">
+                            @item.User <span class="badge badge-dark"></span>
+                        </a>
+
+                        <p class="float-right badge badge-pill badge-primary ml-2">@item.Count</p>
+
+
+                        <span class="float-right badge badge-secondary">@item.Date</span>
+
+                    </div>
+                </div>
+            </div>
+            count++;
+            if (count == 6)
+            { break; }
+            
+        }
+
+    </div>
+
+
+</div>
+<h5 class="mt-0 bg-secondary text-white text-center">Total Albums in Picture Gallery:<span class="text-warning"> @ViewBag.Albums </span>, Total Pictures in Gallery: <span class="text-warning font-weight-bold"> @ViewBag.Pictures </span></h5>
+<br/>
+<br/>

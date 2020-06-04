@@ -1,0 +1,165 @@
+﻿
+
+@model IEnumerable<ASP3_Gallery.Models.ViewModels.ViewAlbum>
+<h2>All Albums page</h2>
+
+
+
+
+<h5 class="mt-0 bg-secondary text-white text-center">Total Albums in Picture Gallery:<span class="text-warning font-weight-bold"> @ViewBag.Albums </span>, Total Pictures in Gallery: <span class="text-warning font-weight-bold"> @ViewBag.Pictures </span></h5>
+
+
+
+<div class="dropdown float-right">
+    <button class="btn btn-warning dropdown-toggle" type="button" id="dropdowntiles" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        @if (Session["tiles"].ToString() == "100")
+        {<strong>All</strong> }
+        else
+        { <strong>@Session["tiles"]/ Page</strong>}
+    </button>
+    <div class="dropdown-menu" style="width:20px; overflow:hidden" aria-labelledby="dropdowntiles">
+        @Ajax.ActionLink(" 3 ", "Allbums", "Home", new { tiles = 3 }, new AjaxOptions { UpdateTargetId = "mybody" }, new { @class = "dropdown-item" })
+        @Ajax.ActionLink(" 6 ", "Allbums", "Home", new { tiles = 6 }, new AjaxOptions { UpdateTargetId = "mybody" }, new { @class = "dropdown-item" })
+        @Ajax.ActionLink(" 9 ", "Allbums", "Home", new { tiles = 9 }, new AjaxOptions { UpdateTargetId = "mybody" }, new { @class = "dropdown-item" })
+        @Ajax.ActionLink(" 12 ", "Allbums", "Home", new { tiles = 12 }, new AjaxOptions { UpdateTargetId = "mybody" }, new { @class = "dropdown-item" })
+        <div class="dropdown-divider" style="width:20px; overflow:hidden"></div>
+        @Ajax.ActionLink(" All ", "Allbums", "Home", new { tiles = 100 }, new AjaxOptions { UpdateTargetId = "mybody" }, new { @class = "dropdown-item" })
+
+    </div>
+</div>
+
+<div class="float-right">
+    <form class="navbar-form navbar-left" style="margin:0 0 0 20px">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search by user" name="search" id="myInput">
+            <div class="input-group-btn">
+                <span class="btn btn-default">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<div class="py-5">
+
+    <div class="row hidden-md-up" id="mygall">
+        @{ int tiles = (int)Session["tiles"];
+            int items = Model.Count();
+            int page = ViewBag.page ?? 1;
+            int pcounter = page - 1;
+            int pages = items / tiles > 0 ? (items / tiles) : 0;
+            if (items % tiles > 0)
+            { pages++; }
+
+            int start = 0; int end = tiles;
+            if (page != 1)
+            {
+                start = page * tiles - tiles;
+                end = page * tiles;
+            }
+            end = end > items ? items : end;
+            start = start > items ? items : start;
+        }
+        @for (int i = start; i < end; i++)
+        {
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="embed-responsive embed-responsive-4by3">
+
+                        <a data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Gallery/@Model.ElementAt(i).IDA">
+                            <img class="card-img-top embed-responsive-item" src="@Model.ElementAt(i).URLpath"
+                                 alt="Card image cap">
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+
+                        <h4 class="card-title font-weight-bold">@Model.ElementAt(i).Name</h4>
+                        <p class="card-text">
+                            @Model.ElementAt(i).Comment
+                        </p>
+
+
+
+
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-warning btn-md btn-rounded" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/UserAlbums/@Model.ElementAt(i).IDU">
+                            @Model.ElementAt(i).User <span class="badge badge-dark"></span>
+                        </a>
+
+                        <p class="float-right badge badge-pill badge-primary ml-2">@Model.ElementAt(i).Count</p>
+
+
+                        <span class="float-right badge badge-secondary">@Model.ElementAt(i).Date</span>
+
+                    </div>
+                </div>
+            </div>
+
+        }
+
+    </div>
+
+
+</div>
+<ul class="pagination justify-content-center" style="margin:20px 0">
+    @if (page == 1)
+    {
+        <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+    }
+    else
+    {
+        <li class="page-item"><a class="page-link" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Allbums?page=@pcounter">Previous</a></li>
+    }
+    @{
+        pages = pages == 0 ? (pages + 1) : pages;
+        start = page > 1 ? (page - 1) : page;
+        start = start > 1 ? (start - 1) : start;
+        end = pages > page ? (page + 1) : page;
+        end = pages > end ? (end + 1) : end;
+        pcounter = page + 1;
+    }
+    @for (int i = start; i <= end; i++)
+    {
+        if (i == page)
+        {
+            <li class="page-item active"><a class="page-link" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Allbums?page=@i">@i</a></li>
+        }
+        else
+        {
+            <li class="page-item"><a class="page-link" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Allbums?page=@i">@i</a></li>
+        }
+
+    }
+
+
+    @if (page == pages)
+    {
+        <li class="page-item disabled"><a class="page-link" href="#">Next</a></li>
+    }
+    else
+    {
+        <li class="page-item"><a class="page-link" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Allbums?page=@pcounter">Next</a></li>
+    }
+
+</ul>
+
+<h5 class="mt-0 bg-secondary text-white text-center">Total Albums in Picture Gallery:<span class="text-warning"> @ViewBag.Albums </span>, Total Pictures in Gallery: <span class="text-warning font-weight-bold"> @ViewBag.Pictures </span></h5>
+<br />
+<br />
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#myInput").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("div.col-md-4").filter(function () {
+                $(this).toggle($(this).find("a").text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>

@@ -1,0 +1,205 @@
+﻿@model IEnumerable<ASP3_Gallery.Models.ViewModels.ViewAlbum>
+<h2>My Albums Page</h2>
+
+
+
+<div style=" background-color:rgba(252, 244, 219, 0.71)" class="jumbotron p-2">
+    <button type="button" class="btn btn-warning mb-2" data-toggle="collapse" data-target="#fileload">Download files</button>
+    <div class="collapse" id="fileload">
+        <div class="row text-sm-center">
+            <input type="file" name="upload" id="uploadFile" value="Choose pictures" multiple class="form-control btn btn-warning col-md-4 ml-3" accept=".jpg,.jpeg,.png" /><br />
+            <input type="text" name="txtarea" id="mytext" class="col-md-4 ml-4" placeholder="Name your Album">
+            <button id="submit" class="btn btn-warning col-md-3 ml-4">Загрузить</button>
+        </div>
+        <textarea id="mycomments" name="comment" placeholder="Your Comments (Optional)" class="col-md-12 ml-1 mt-4"></textarea>
+        <div class="alert-danger" id="validateErrors" style="display:none"></div>
+        <div class="alert-success" id="valnoerrors" style="display:none">Succesfully completed</div>
+    </div>
+</div>
+<h5 class="mt-0 bg-secondary text-white text-center">Total albums <span class="text-warning font-weight-bold"> @Model.Count()</span></h5>
+<div class="py-5">
+
+    <div class="row hidden-md-up">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="embed-responsive embed-responsive-4by3">                       
+                        
+                        <a data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/Gallery/@item.IDA">
+                            <img class="card-img-top embed-responsive-item" src="@item.URLpath"
+                                 alt="Card image cap">
+                        </a>
+                    </div>
+
+                    <div class="card-body">
+                        <a data-toggle="tooltip" title="Edit Album" value="@item.IDA" class="Edit-album btn btn-dark btn-circle float-right" href="/Home/EditAlbum/@item.IDA">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a data-toggle="tooltip" title="Delete Album" value="@item.IDA" class="Delete-album btn btn-danger btn-circle float-right" href="/Home/Delete/@item.IDA">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+
+                        <h4 class="card-title font-weight-bold">@item.Name</h4>
+                        <p class="card-text">
+                            @item.Comment
+                        </p>
+
+
+
+
+                    </div>
+                    <div class="card-footer">
+                        <a class="btn btn-warning btn-md btn-rounded" data-ajax="true" data-ajax-mode="replace" data-ajax-update="#mybody" href="/Home/UserAlbums/@item.IDU">
+                            @item.User <span class="badge badge-dark"></span>
+                        </a>
+
+                        <p class="float-right badge badge-pill badge-primary ml-2">@item.Count</p>
+
+
+                        <span class="float-right badge badge-secondary">@item.Date</span>
+                    </div>
+                </div>
+            </div>
+        }      
+
+    </div>
+
+
+</div>
+<h5 class="mt-0 bg-secondary text-white text-center">Total albums <span class="text-warning font-weight-bold"> @Model.Count()</span></h5>
+
+<div class="modal fade"  id="modalD" role="dialog" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" >
+   
+
+</div>
+
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        // BS MODAL OPEN CLOSE EFFECT  ---------------------------------
+        var timeoutHandler = null;
+        $('#modalD').on('hide.bs.modal', function (e) {
+            var anim = $('.modal-dialog').removeClass('flipInY').addClass('flipOutX'); // Model Come class Remove & Out effect class add
+            if (timeoutHandler) clearTimeout(timeoutHandler);
+            timeoutHandler = setTimeout(function () {
+                $('.modal-dialog').removeClass('flipOutY').addClass('flipInX'); // Model Out class Remove & Come effect class add
+            }, 500); // some delay for complete Animation
+        });
+    });
+
+    $(".Edit-album").on("click", function (e) {
+        e.preventDefault();
+        $.get(this.href, function (result) {
+
+            $('#modalD').html(result);
+            $('#modalD').modal('show');
+        })
+    });
+
+
+    function UpdateME() {
+        setTimeout(function() {
+            $.ajax({
+            url: '@Url.Action("Album", "Home")',
+            success: function (data, status) {
+                $('#mybody').html(data);
+            }
+        })
+        }, 500); 
+    }
+
+
+    $(".Delete-album").on("click", function (e) {
+        e.preventDefault();
+       // alert("Delete");
+        $.get(this.href, function (result) {
+
+            $('#modalD').html(result);
+            $('#modalD').modal('show');
+        }
+        )
+    });
+
+    $('#submit').click(function (e) {
+        e.preventDefault();
+        $('#valnoerrors').hide();
+        var files = document.getElementById('uploadFile').files;
+        var albumname = $('#mytext');
+        var errordiv = $('#validateErrors');
+        errordiv.empty();
+        if (files.length == 0)
+            errordiv.append("Choose at least 1 file");
+        else if (albumname.val() == '')
+            errordiv.append("Name this Album");
+        if (files.length == 0 || albumname.val() == '') { errordiv.show(); return false; }
+
+         $.ajax({
+                    type: "POST",
+             url: '@Url.Action("PreUploadCheck", "Home")',
+             data: { AlbumName: albumname.val() },
+                    dataType: "json",
+             success: function (data) {
+                 //alert(data);
+                 if (data == true) {
+                     errordiv.append("This Album name is occupied alredy!");
+                     errordiv.show();
+                 }
+                 else {
+                        if (files.length > 0) {
+            // Конструктор FormData() создает HTML-форму.
+            var data = new FormData();
+                            data.append("albumname", $("#mytext").val());
+                            var comments = $('#mycomments').val();
+                            if (comments == '')
+                                comments = "Lorem ipsum Lorem ipsum. Some comments may be here....";
+                            data.append("comments", comments);
+            for (var i = 0; i < files.length; i++) {
+                data.append("file" + i, files[i]);
+                data.append("filedate" + i, files[i].lastModifiedDate);
+            }
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Upload", "Home")',
+                contentType: false, // Указывает тип содержимого, которое будет передано на сервер.
+                processData: false, // Логическое значение, устанавливающее, должны ли данные, передающиеся с запросом преобразовываться в строку или нет
+                data: data,
+                success: function (result) {
+                   // alert(result);
+                    $('#valnoerrors').show();
+                    UpdateME();
+                },
+                error: function (xhr, status, p3) {
+                    alert(xhr.responseText);
+                },
+                complete: function () {
+                    $('#uploadFile').val('');
+                    $('#mytext').val('');
+                    $('#mycomments').val('');
+
+                }
+            });
+        }
+                 }
+
+
+                    },
+             error: function (result) {
+                 alert("Error commiting transaction");
+             },
+
+
+                });
+
+
+
+
+    });
+
+
+
+
+</script>

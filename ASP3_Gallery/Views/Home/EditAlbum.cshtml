@@ -1,0 +1,143 @@
+﻿@model ASP3_Gallery.Models.Entities.Album
+
+
+  
+        <div class="modal-dialog flipInX animated" style="width:400px">
+            <div class="modal-content" style="background-image:url(/Images/wood.png); background-repeat:repeat">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title">Edit Album properties</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+                </div>
+                <div class="modal-body">
+                    @using (Html.BeginForm(new { @id = "myform" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                       
+                        @Html.HiddenFor(model => model.ID)
+                   
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                
+                    <div class="form-group col-sm-12">
+                        @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-4 font-weight-bold" })
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-edit"></i></span>
+                            <input type="hidden" value="@Model.Name" id="checkme">
+                            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control"} })
+
+                        </div>
+                        @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger"})
+
+                    </div>
+
+                        <div class="form-group col-sm-12">
+                            @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-4 font-weight-bold" })
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                @Html.TextBoxFor(model => model.Date, new { @class = "form-control", disabled = "disabled", @readonly = "readonly" })
+
+                            </div>
+                            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="form-group col-sm-12">
+                            @Html.LabelFor(model => model.Comment, htmlAttributes: new { @class = "control-label col-md-4 font-weight-bold" })
+
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-comment-dots"></i></span>
+                                @Html.TextAreaFor(model => model.Comment, new { @class = "form-control", @placeholder = "Write about yourself (Required)", @style = "min-height:80px" })
+
+                            </div>
+                            @Html.ValidationMessageFor(model => model.Comment, "", new { @class = "text-danger"})
+
+                        </div>
+                        <div class="modal-footer">
+                           
+                                <button type="submit" id="save" value="Save" class="btn btn-success col mr-auto">Save</button>
+                                <button type="button" class="btn btn-warning col" id="btnCloseIt" data-dismiss="modal">Close</button>
+                        </div>
+
+
+
+                    }
+
+                </div>
+
+            </div>
+        </div>
+
+
+        <script type="text/javascript">
+        //$(document).ready(function () {
+        //    //alert("Ready");
+        //    //var form = $("#Modaldiv").closest("form");
+        //    //form.removeData('validator');
+        //    //form.removeData('unobtrusiveValidation');
+        //   // $.validator.unobtrusive.parse(document);
+        //});
+
+
+        $('#save').on('click', function (e) {
+           // e.preventDefault();
+           // alert("Click")
+            $('#modalD form').validate({  // initialize plugin
+                //rules: {
+                //    Name: {
+                //        // money: true, //<-- no such rule
+                //        required: true,
+                //        minlength: 4
+                //    },
+                //    Comment: {
+                //        required: true, // superfluous; "false" same as leaving this rule out.
+                //        minlength: 5
+                //    }
+                // },
+                // messages: {
+                //     Name: {
+                //         required: "Please enter some data",
+                //         minlength: "Your data must be at least 8 characters"
+                //     },
+                //     Comment: {
+                //         required: "Please enter some data",
+                //         minlength: "Your data must be at least 8 characters"
+                //     }
+                // },
+                //highlight: function (element) {
+                //    $(element).closest('.input-group')
+                //        .removeClass('success').addClass('error text-danger');
+                //},
+                //success: function (element) {
+                //    element.addClass('valid').closest('.input-group')
+                //        .removeClass('error').addClass('success');
+                //},
+                submitHandler: function (form) {
+                    // form validates so do the ajax
+                    $.ajax({
+                        type: $(form).attr('method'),
+                        url: '@Url.Action("EditAlbum", "Home")',
+                        data: $(form).serialize(),
+                        success: function (data, status) {
+                            if (data != "ok")
+                                $('#modalD').html(data);
+                            else {
+                                $('#modalD').modal('hide');
+                                UpdateME();
+ 
+                            }
+
+                        }
+                    });
+                    return false; // ajax used, block the normal submit
+                }
+            });
+
+        });
+
+
+
+
+
+   
+
+        </script>
